@@ -1,6 +1,6 @@
-#research-workflow
+## Research Workflow
 
-A RAG-powered research workflow that processes PDF documents using contextual chunking and vector embeddings for intelligent information retrieval from an internal database.
+A collection of RAG-powered, agentic workflows that processes documents using contextual chunking and vector embeddings for intelligent information retrieval from an internal database.
 
 ## Setup
 
