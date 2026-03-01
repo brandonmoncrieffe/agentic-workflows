@@ -1,4 +1,4 @@
-# va-research-agent
+#research-workflow
 
 A RAG-powered research workflow that processes PDF documents using contextual chunking and vector embeddings for intelligent information retrieval from an internal database.
 
