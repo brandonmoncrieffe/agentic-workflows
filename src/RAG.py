@@ -43,7 +43,8 @@ def vectorize(collection_name, pdf_paths, dev_mode, chunk_size=1000, chunk_overl
             contextualized_chunks = file_chunk.contextual_chunker(chunks, summary, pdf_path)
             embeds = chunk_embed.embed_chunks(contextualized_chunks, batch)
             vetor_db.add_embeds(collection, embeds, contextualized_chunks, pdf_path)
-            
+    logging.info("Vectorization complete.")
+
 def query(collection_name, query_pdf, chunk_size=400, chunk_overlap=80, batch=10, top_k=5):
     chroma_client = vetor_db.initialize_client()
     md_text = file_input.extract_markdown_from_pdf(query_pdf)
@@ -76,15 +77,13 @@ def synthesize_response(input_chunks, context_chunks):
     )
     return response
 
-def RAG(collection_name, pdf_paths, dev_mode, query_pdf):
-    # vetor_db.remove_collection(vetor_db.initialize_client(), "lram_papers")
-    collection_name = "lram_papers"
-    pdf_paths = '/Users/brandonmoncrieffe/Documents/Vaelen August/va-research-agent/tests/lram_papers'
-    vectorize(collection_name, pdf_paths, dev_mode=True)
-
-    query_pdf = "tests/lram_papers/test_query/2019 Elmadih.pdf"
-    ids, related_chunk, related_embeds, query_chunk = query(collection_name, query_pdf)
-
-    response = synthesize_response(query_chunk, related_chunk)
-    print(response['message']['content'])
+def RAG(collection_name, query_pdf):
+    ids, context_chunks, context_embeds, query_chunk = query(collection_name, query_pdf)
+    response = synthesize_response(query_chunk, context_chunks)
+    pass
     
+if __name__ == "__main__":
+    # vetor_db.remove_collection(vetor_db.initialize_client(), "lram_papers"
+    collection_name = "LRAM-database"
+    pdf_paths = '/Users/brandonmoncrieffe/Documents/Vaelen August/va-research-agent/tests/lram_papers'
+    vectorize(collection_name, pdf_paths, dev_mode=False)
