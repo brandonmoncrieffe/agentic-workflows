@@ -17,17 +17,22 @@ class LRAM_paper(BaseModel):
     results: str
     conclusion: str
 
-def vectorize_pdf(collection_name, pdf_paths, dev_mode, chunk_size=1000, chunk_overlap=200, batch=10):
+def vectorize(collection_name, pdf_paths, dev_mode, chunk_size=1000, chunk_overlap=200, batch=10):
     chroma_client = vetor_db.initialize_client()
     pdf_paths = list(Path(pdf_paths).glob('*.pdf'))
+    
     try: 
         collection = vetor_db.open_collection(chroma_client, collection_name)
     except:
         collection = vetor_db.create_collection(chroma_client, collection_name)
-        
+    
+    collection_data = collection.get(collection_name) 
+    existing_paths = collection_data['documents']
+    
     for pdf_path in pdf_paths:
-        print(pdf_path)
-        
+        if str(pdf_path) in existing_paths:
+            logging.info(f"PDF already processed, skipping: {pdf_path}")
+            continue
         md_text = file_input.extract_markdown_from_pdf(pdf_path)
         chunks = file_chunk.chunk_markdown(md_text, chunk_size, chunk_overlap)
         if dev_mode:
@@ -71,10 +76,11 @@ def synthesize_response(input_chunks, context_chunks):
     )
     return response
 
-if __name__ == "__main__":
+def RAG(collection_name, pdf_paths, dev_mode, query_pdf):
+    # vetor_db.remove_collection(vetor_db.initialize_client(), "lram_papers")
     collection_name = "lram_papers"
     pdf_paths = '/Users/brandonmoncrieffe/Documents/Vaelen August/va-research-agent/tests/lram_papers'
-    vectorize_pdf(collection_name, pdf_paths, dev_mode=True)
+    vectorize(collection_name, pdf_paths, dev_mode=True)
 
     query_pdf = "tests/lram_papers/test_query/2019 Elmadih.pdf"
     ids, related_chunk, related_embeds, query_chunk = query(collection_name, query_pdf)
