@@ -44,11 +44,12 @@ def summarizer(md_text, file_name):
 def contextual_chunker(chunks, summary, file_name):
     DOCUMENT_SUMMARY = summary
     FILE_NAME = file_name
+    MAX_CONTEXT = 300
     contextualized_chunks = []
+
     
     for idx, chunk in enumerate(chunks, 1):
         logging.info(f"Processing chunk {idx}/{len(chunks)}...")
-        chunk_number = chunk 
         prompt = f"""
     You are helping build a retrieval system.
 
@@ -70,6 +71,8 @@ def contextual_chunker(chunks, summary, file_name):
             messages=[{"role": "system", "content": prompt}]
         )
         context = response['message']['content']
+        if len(context) > MAX_CONTEXT:
+            context = context[:MAX_CONTEXT]
         contextualized_chunk = context + "\n\n" + chunk
         contextualized_chunks.append(contextualized_chunk)
     logging.info(f"Contextualized {len(contextualized_chunks)} chunks.")
