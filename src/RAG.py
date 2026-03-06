@@ -85,5 +85,5 @@ def RAG(collection_name, query_pdf):
 if __name__ == "__main__":
     # vetor_db.remove_collection(vetor_db.initialize_client(), "lram_papers"
     collection_name = "LRAM-database"
-    pdf_paths = '/Users/brandonmoncrieffe/Documents/Vaelen August/va-research-agent/tests/lram_papers'
+    pdf_paths = 'tests\lram_papers'
     vectorize(collection_name, pdf_paths, dev_mode=False)
