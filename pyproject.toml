@@ -3,7 +3,7 @@ name = "va-research-agent"
 version = "0.1.0"
 description = "A research agent with RAG capabilities for PDF document processing"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = "==3.11.14"
 dependencies = [
     "ollama>=0.1.0",
     "pymupdf4llm>=0.0.1",

@@ -1,3 +1,5 @@
 /.DS_Store
 chroma_db
 __pycache__
+va_research_agent.egg-info
+uv.lock
