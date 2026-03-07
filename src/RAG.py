@@ -1,3 +1,6 @@
+import os
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+
 import ollama
 import core.vetor_db as vetor_db
 import logging
@@ -20,18 +23,22 @@ class LRAM_paper(BaseModel):
 def vectorize(collection_name, pdf_paths, dev_mode, chunk_size=1000, chunk_overlap=200, batch=10):
     chroma_client = vetor_db.initialize_client()
     pdf_paths = list(Path(pdf_paths).glob('*.pdf'))
-    
+    logging.info(f"Found {len(pdf_paths)} PDF files to process")
+
     try: 
         collection = vetor_db.open_collection(chroma_client, collection_name)
     except:
         collection = vetor_db.create_collection(chroma_client, collection_name)
     
-    collection_data = collection.get(collection_name) 
-    existing_paths = collection_data['documents']
-    
+    collection_data = collection.get()
+    existing_paths = {
+        doc_id.rsplit(':', 1)[0] 
+        for doc_id in collection_data['ids']
+    }
+
     for pdf_path in pdf_paths:
         if str(pdf_path) in existing_paths:
-            logging.info(f"PDF already processed, skipping: {pdf_path}")
+            logging.info(f"Skipping: {pdf_path}")
             continue
         md_text = file_input.extract_markdown_from_pdf(pdf_path)
         chunks = file_chunk.chunk_markdown(md_text, chunk_size, chunk_overlap)
@@ -83,7 +90,6 @@ def RAG(collection_name, query_pdf):
     pass
     
 if __name__ == "__main__":
-    # vetor_db.remove_collection(vetor_db.initialize_client(), "lram_papers"
-    collection_name = "LRAM-database"
-    pdf_paths = 'tests\lram_papers'
-    vectorize(collection_name, pdf_paths, dev_mode=False)
+    collection_name = "testing_functionality"
+    pdf_paths = 'tests/lram_papers'
+    vectorize(collection_name, pdf_paths, dev_mode=True)

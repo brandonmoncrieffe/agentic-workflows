@@ -2,6 +2,9 @@ import logging
 from pathlib import Path
 from logging_config import setup_logging
 import chromadb
+
+# Suppress ChromaDB logging
+logging.getLogger('chromadb').setLevel(logging.ERROR)
  
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PERSIST_DIR = PROJECT_ROOT / "chroma_db"
