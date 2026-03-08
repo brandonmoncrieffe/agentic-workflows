@@ -126,6 +126,5 @@ def RAG(collection_name, query_pdf, dev_mode):
     
 if __name__ == "__main__":
     collection_name = "testing_functionality"
-    pdf_paths = 'tests/lram_papers'
-    query_path = 'tests/lram_papers/test_query'
+    pdf_paths = 'lram_papers/design'
     parameter_sweep(collection_name, pdf_paths, dev_mode=True)
