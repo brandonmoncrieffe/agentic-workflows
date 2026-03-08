@@ -42,7 +42,7 @@ def save_response(response, pdf_path, response_format, output_dir='outputs'):
         'extracted': paper.model_dump()
     }
     json_path = output_path / f"{base_filename}.json"
-    with open(json_path, 'w') as f:
+    with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(json_data, f, indent=2)
     logging.info(f"Saved JSON to: {json_path}")
     
@@ -69,7 +69,7 @@ def save_response(response, pdf_path, response_format, output_dir='outputs'):
             md_content += "\n"
     
     md_path = output_path / f"{base_filename}.md"
-    md_path.write_text(md_content)
+    md_path.write_text(md_content, encoding='utf-8')
     logging.info(f"Saved Markdown to: {md_path}")
     
     return paper
@@ -92,7 +92,7 @@ def save_raw_markdown(md_text, pdf_path, output_dir='outputs'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     
     md_path = output_path / f"{pdf_name}_raw_{timestamp}.md"
-    md_path.write_text(md_text)
+    md_path.write_text(md_text, encoding='utf-8')
     logging.info(f"Saved raw markdown to: {md_path}")
 
 

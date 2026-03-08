@@ -7,6 +7,7 @@ requires-python = "==3.11.14"
 dependencies = [
     "ollama>=0.1.0",
     "pymupdf4llm>=0.0.1",
+    "pymupdf_layout>=0.1.0",
     "langchain-text-splitters>=0.0.1",
     "pydantic>=2.0.0",
     "chromadb>=0.4.0",
