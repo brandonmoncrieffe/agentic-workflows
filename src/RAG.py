@@ -86,7 +86,7 @@ def synthesize_response(input_chunks, context_chunks, prompt_template, response_
     context_chunks = file_chunk.format_chunks(context_chunks)
 
     response = ollama.chat(
-        model='qwen2.5:7b-instruct',
+        model='qwen3.5:9b',
         messages=[{"role": "user", "content": prompt_template.format(input_chunks=input_chunks, context_chunks=context_chunks)}],
         format=response_format.model_json_schema(),
         options={ "temperature": 0.0 }    
