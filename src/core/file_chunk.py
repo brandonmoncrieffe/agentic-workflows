@@ -12,7 +12,9 @@ def chunk_markdown(md_text, chunk_size, chunk_overlap):
 
 def format_chunks(chunks):
     formatted = []
-    chunks = chunks[0]
+    # Handle nested lists from ChromaDB query results
+    if chunks and isinstance(chunks[0], list):
+        chunks = chunks[0]
 
     for i, chunk in enumerate(chunks):
         text = chunk.strip()
