@@ -11,8 +11,8 @@ from core import file_chunk
 from core import file_input
 from pathlib import Path
 from pydantic import BaseModel
-from templates.prompts import SUMMARY_PROMPT, COMPARISON_PROMPT, LRAM_EXTRACTION_PROMPT
-from templates.schemas import LRAM_paper
+from templates.prompts import SUMMARY_PROMPT, LRAM_BUCKET_PROMPT
+from templates.schemas import LRAM_paper_buckets, PaperSummary
 
 
 def ingest(pdf_path, dev_mode, chunk_size=1000, chunk_overlap=200):
@@ -86,34 +86,30 @@ def synthesize_response(input_chunks, context_chunks, prompt_template, response_
     context_chunks = file_chunk.format_chunks(context_chunks)
 
     response = ollama.chat(
-        model='qwen3.5:9b',
+        model='qwen2.5:7b-instruct',
         messages=[{"role": "user", "content": prompt_template.format(input_chunks=input_chunks, context_chunks=context_chunks)}],
         format=response_format.model_json_schema(),
         options={ "temperature": 0.0 }    
     )
     return response
 
-def parameter_sweep(collection_name, query_pdfs, dev_mode, output_dir='outputs'):
+def parameter_sweep(query_pdfs, schema, prompt_template, output_dir='outputs'):
     query_pdfs = list(Path(query_pdfs).glob('*.pdf'))
     results = []
     for query_pdf in query_pdfs:
-        # For extraction, use FULL TEXT or much larger chunks
         paper_extracted = ingest(query_pdf, dev_mode=True, chunk_size=8000, chunk_overlap=500)
         input_chunks = paper_extracted['chunks']
-        
-        # Save raw markdown for inspection
         save_raw_markdown(paper_extracted['md_text'], query_pdf, output_dir)
         
-        # If paper is small enough, just use the full text instead of chunks
         full_text = paper_extracted['md_text']
         if len(full_text) < 100000:  # ~25k tokens
             input_chunks = [full_text]
         
-        # SUMMARY_PROMPT doesn't use context_chunks, so pass empty list
-        response = synthesize_response(input_chunks, [], prompt_template=LRAM_EXTRACTION_PROMPT, response_format=LRAM_paper)
+
+        response = synthesize_response(input_chunks, context_chunks=[], prompt_template=prompt_template, response_format=schema)
         
         # Save to JSON and Markdown
-        paper = save_response(response, query_pdf, LRAM_paper, output_dir)
+        paper = save_response(response, query_pdf, schema, output_dir)
         results.append(paper)
     
     return results
@@ -127,4 +123,4 @@ def RAG(collection_name, query_pdf, dev_mode):
 if __name__ == "__main__":
     collection_name = "testing_functionality"
     pdf_paths = 'lram_papers/design'
-    parameter_sweep(collection_name, pdf_paths, dev_mode=True)
+    parameter_sweep(pdf_paths, LRAM_paper_buckets, LRAM_BUCKET_PROMPT)

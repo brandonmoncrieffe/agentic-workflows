@@ -4,26 +4,22 @@ Response format schemas for structured LLM outputs.
 from pydantic import BaseModel
 from typing import Optional, List
 
+class LRAM_paper_buckets(BaseModel):
+    type_of_metamaterial_design: str
+    active_control_present: str
+    attenuation_bands_hz: str
+    peak_attenuation_db: str
+    material_of_metamaterial: str
+    unit_cell_information: str
 
-class LRAM_paper_rough(BaseModel):
-    """Standard LRAM paper extraction format."""
+class PaperSummary(BaseModel):
+    """Concise paper summary."""
     title: str
-    authors: str
-    abstract: str
-    method: str
-    results: str
-    conclusion: str
+    main_contribution: str
+    key_findings: List[str]
+    methodology_brief: str
+    implications: str
 
-class LRAM_paper(BaseModel):
-    type_of_metamaterial_design: Optional[str] = None
-    active_control_present: Optional[bool] = None
-    attenuation_band_min_hz: Optional[float] = None
-    attenuation_band_max_hz: Optional[float] = None
-    attenuation_band_min_normalized: Optional[float] = None
-    attenuation_band_max_normalized: Optional[float] = None
-    peak_attenuation_db: Optional[float] = None
-    material_of_metamaterial: Optional[List[str]] = None
-    evidence_text: Optional[List[str]] = None
 
 class PaperComparison(BaseModel):
     """Comparison between query paper and related work."""
@@ -45,13 +41,6 @@ class MethodologyAnalysis(BaseModel):
     citations: List[int]
 
 
-class PaperSummary(BaseModel):
-    """Concise paper summary."""
-    title: str
-    main_contribution: str
-    key_findings: List[str]
-    methodology_brief: str
-    implications: str
 
 
 class DetailedExtraction(BaseModel):
