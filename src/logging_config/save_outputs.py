@@ -72,7 +72,7 @@ def save_response(response, pdf_path, response_format, output_dir='outputs'):
     md_path.write_text(md_content, encoding='utf-8')
     logging.info(f"Saved Markdown to: {md_path}")
     
-    return paper
+    return md_content
 
 
 def save_raw_markdown(md_text, pdf_path, output_dir='outputs'):

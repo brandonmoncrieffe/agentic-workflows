@@ -5,12 +5,24 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 class LRAM_paper_buckets(BaseModel):
-    type_of_metamaterial_design: str
+    type_of_acoustic_metamaterial_design: str
     active_control_present: str
     attenuation_bands_hz: str
-    peak_attenuation_db: str
-    material_of_metamaterial: str
+    peak_attenuations_db: str
+    material_of_acoustic_metamaterial: str
     unit_cell_information: str
+    methodology: str
+    fabrication_methods: str
+
+class LRAM_paper_parameters(BaseModel):
+    type_of_acoustic_metamaterial_design: str
+    active_control_present: bool
+    attenuation_bands_hz: list[list[float]]
+    peak_attenuations_db: dict[float, float]
+    material_of_acoustic_metamaterial: list[str]
+    unit_cell_information: dict[str, float | str]
+    methodology: list[str]
+    fabrication_methods: list[str]
 
 class PaperSummary(BaseModel):
     """Concise paper summary."""

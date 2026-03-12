@@ -52,5 +52,9 @@ outputs/
 *.tmp
 tmp/
 
-outputs-general-bucket-extraction
-outputs-summary-lram-comparison
+outputs-gbe-0
+outputs-gbe-1
+outputs-gbe-2
+outputs-gbe-3
+outputs-gbe-4
+outputs-gbe-5

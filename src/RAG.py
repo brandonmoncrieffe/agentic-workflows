@@ -11,8 +11,8 @@ from core import file_chunk
 from core import file_input
 from pathlib import Path
 from pydantic import BaseModel
-from templates.prompts import SUMMARY_PROMPT, LRAM_BUCKET_PROMPT
-from templates.schemas import LRAM_paper_buckets, PaperSummary
+from templates.prompts import LRAM_PARAMETER_PROMPT, LRAM_BUCKET_PROMPT
+from templates.schemas import LRAM_paper_buckets, LRAM_paper_parameters
 
 
 def ingest(pdf_path, dev_mode, chunk_size=1000, chunk_overlap=200):
@@ -93,26 +93,31 @@ def synthesize_response(input_chunks, context_chunks, prompt_template, response_
     )
     return response
 
-def parameter_sweep(query_pdfs, schema, prompt_template, output_dir='outputs'):
+def parameter_sweep(query_pdfs, bucket_schema, parameter_schema, bucket_prompt, parameter_prompt,output_dir='outputs'):
+    #retrieve raw pdf(s) location
     query_pdfs = list(Path(query_pdfs).glob('*.pdf'))
-    results = []
+    md_contents = {}
+
+    #interate through each paper
     for query_pdf in query_pdfs:
+        #clean markdown
         paper_extracted = ingest(query_pdf, dev_mode=True, chunk_size=8000, chunk_overlap=500)
         input_chunks = paper_extracted['chunks']
         save_raw_markdown(paper_extracted['md_text'], query_pdf, output_dir)
-        
         full_text = paper_extracted['md_text']
         if len(full_text) < 100000:  # ~25k tokens
             input_chunks = [full_text]
-        
 
-        response = synthesize_response(input_chunks, context_chunks=[], prompt_template=prompt_template, response_format=schema)
-        
+        bucket_response = synthesize_response(input_chunks, context_chunks=[], prompt_template=bucket_prompt, response_format=bucket_schema)
+
         # Save to JSON and Markdown
-        paper = save_response(response, query_pdf, schema, output_dir)
-        results.append(paper)
-    
-    return results
+        md_content = save_response(bucket_response, query_pdf, bucket_schema, output_dir)
+
+        parameter_response = synthesize_response(input_chunks, context_chunks=[], prompt_template=parameter_prompt, response_format=parameter_schema)
+
+        save_response(parameter_response, query_pdf, parameter_schema, output_dir)
+
+    pass
 
 def RAG(collection_name, query_pdf, dev_mode):
     ids, context_chunks, context_embeds, query_chunk = query(collection_name, query_pdf, dev_mode)
@@ -121,6 +126,5 @@ def RAG(collection_name, query_pdf, dev_mode):
     pass
     
 if __name__ == "__main__":
-    collection_name = "testing_functionality"
     pdf_paths = 'lram_papers/design'
-    parameter_sweep(pdf_paths, LRAM_paper_buckets, LRAM_BUCKET_PROMPT)
+    parameter_sweep(pdf_paths, LRAM_paper_buckets, LRAM_paper_parameters, LRAM_BUCKET_PROMPT, LRAM_PARAMETER_PROMPT)
