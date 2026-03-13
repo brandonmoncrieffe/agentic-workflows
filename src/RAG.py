@@ -111,11 +111,11 @@ def parameter_sweep(query_pdfs, bucket_schema, parameter_schema, bucket_prompt, 
         bucket_response = synthesize_response(input_chunks, context_chunks=[], prompt_template=bucket_prompt, response_format=bucket_schema)
 
         # Save to JSON and Markdown
-        md_content = save_response(bucket_response, query_pdf, bucket_schema, output_dir)
+        md_content = save_response(bucket_response, query_pdf, bucket_schema, md=True, output_dir=output_dir)
 
         parameter_response = synthesize_response(input_chunks, context_chunks=[], prompt_template=parameter_prompt, response_format=parameter_schema)
 
-        save_response(parameter_response, query_pdf, parameter_schema, output_dir)
+        save_response(parameter_response, query_pdf, parameter_schema, md=False, output_dir=output_dir)
 
     pass
 

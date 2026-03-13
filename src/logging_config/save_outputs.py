@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 
-def save_response(response, pdf_path, response_format, output_dir='outputs'):
+def save_response(response, pdf_path, response_format, md, output_dir='outputs'):
     """
     Save LLM response as both JSON and Markdown.
     
@@ -45,32 +45,36 @@ def save_response(response, pdf_path, response_format, output_dir='outputs'):
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(json_data, f, indent=2)
     logging.info(f"Saved JSON to: {json_path}")
-    
-    # Save Markdown - dynamically format based on available fields
-    md_content = f"""# Extraction Results
 
-**Source:** {pdf_path}  
-**Extracted:** {timestamp}
-**Schema:** {response_format.__name__}
+    if md == True:
+        
+        # Save Markdown - dynamically format based on available fields
+        md_content = f"""# Extraction Results
 
----
+    **Source:** {pdf_path}  
+    **Extracted:** {timestamp}
+    **Schema:** {response_format.__name__}
 
-"""
-    
-    # Add all fields from the model
-    for field_name, field_value in paper.model_dump().items():
-        if field_value is not None:
-            md_content += f"## {field_name.replace('_', ' ').title()}\n"
-            if isinstance(field_value, list):
-                for item in field_value:
-                    md_content += f"- {item}\n"
-            else:
-                md_content += f"{field_value}\n"
-            md_content += "\n"
-    
-    md_path = output_path / f"{base_filename}.md"
-    md_path.write_text(md_content, encoding='utf-8')
-    logging.info(f"Saved Markdown to: {md_path}")
+    ---
+
+    """
+        
+        # Add all fields from the model
+        for field_name, field_value in paper.model_dump().items():
+            if field_value is not None:
+                md_content += f"## {field_name.replace('_', ' ').title()}\n"
+                if isinstance(field_value, list):
+                    for item in field_value:
+                        md_content += f"- {item}\n"
+                else:
+                    md_content += f"{field_value}\n"
+                md_content += "\n"
+        
+        md_path = output_path / f"{base_filename}.md"
+        md_path.write_text(md_content, encoding='utf-8')
+        logging.info(f"Saved Markdown to: {md_path}")
+    else:
+        md_content = None
     
     return md_content
 

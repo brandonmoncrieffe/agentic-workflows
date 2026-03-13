@@ -54,6 +54,7 @@ PAPER:
 
 """
 
+
 LRAM_PARAMETER_PROMPT = """
 Given the general paragraphs that describe each parameter, extract specific values for each parameter.
 
@@ -67,12 +68,13 @@ EXTRACTION GUIDELINES:
    
 3. attenuation_bands_hz:
    Return a list of specific frequency bands.
-
-   Record each band or frequency exactly as described in the text.
-   Multiple attenuation bands may exist; list them all separately.
+   For example, if the summary reports two bands from 100-200 Hz and 500-600 Hz, 
+   return [[100,200],[500,600]].
 
 5. peak_attenuation_db:
    Return the specific value of the strongest acoustic attenuation reported in dB at specified frequencies.
+   For example, if the summary reports a peak attenuation of 30 dB at 150 Hz, return {{"150": 30}}.
+   If attenuation is reported without a frequency, just return the value as {{"unknown": 30}}.
 
 5. material_of_metamaterial:
    Return a list of specific materials used to fabricate the metamaterial.
@@ -80,7 +82,7 @@ EXTRACTION GUIDELINES:
 6. unit_cell_information:
    Return a dictionary of the key geometric and structural parameters of the unit cell that define the metamaterial design.
    This includes the overall unit cell size (lattice constant) and the internal geometry of the resonating structure.
-   If information is not explicitly stated, return an empty dictionary.
+   If information is not explicitly stated, return an empty dictionary: {{}}.
 
 7. methodology:
    Return a list of specific research methods used to characterize the metamaterial's acoustic attenuation properties.
@@ -92,7 +94,7 @@ EXTRACTION GUIDELINES:
 PAPER:
 {input_chunks}
 
-""" 
+"""
 
 
 

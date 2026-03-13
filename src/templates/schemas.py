@@ -18,9 +18,9 @@ class LRAM_paper_parameters(BaseModel):
     type_of_acoustic_metamaterial_design: str
     active_control_present: bool
     attenuation_bands_hz: list[list[float]]
-    peak_attenuations_db: dict[float, float]
+    peak_attenuations_db: dict[str, float]
     material_of_acoustic_metamaterial: list[str]
-    unit_cell_information: dict[str, float | str]
+    unit_cell_information: dict[str, float]
     methodology: list[str]
     fabrication_methods: list[str]
 
